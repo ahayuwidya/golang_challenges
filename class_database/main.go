@@ -53,7 +53,6 @@ func main() {
 			fmt.Println("Alasan    :", member.Reason)
 		}
 	}
-
 	if !nameFound || !idFound {
 		fmt.Println("Data dengan nama/absen tsb tidak tersedia.")
 	}
