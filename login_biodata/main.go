@@ -50,22 +50,29 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	username := r.FormValue("username")
+	// username := r.FormValue("username")
+	username := r.FormValue("useremail")
 	// password := r.FormValue("password")
 
-	// fmt.Println("username test", username)
+	fmt.Println("username test", username)
 	// fmt.Println("password test", password)
 	// fmt.Println("test loop")
 
-	for _, person := range people {
-		// fmt.Println(i, person.Email)
+	for i, person := range people {
+		fmt.Println("here", i, person.Email)
 		if username == person.Email {
+			fmt.Println("here 1")
+			fmt.Println("username check match", username)
 			person_id := strconv.Itoa(person.Person_ID)
-			http.Redirect(w, r, "/profile/"+person_id, http.StatusFound)
-		} else {
-			http.Redirect(w, r, "/gagal", http.StatusFound)
+			fmt.Println("person_id check match", person_id)
+			http.Redirect(w, r, "/profile/"+person_id, http.StatusSeeOther)
+			fmt.Println("here 2")
 		}
 	}
+	fmt.Println("here 3")
+	fmt.Println("username check no match", username)
+	http.Redirect(w, r, "/gagal", http.StatusSeeOther)
+	fmt.Println("here 4")
 }
 
 func profilePage(w http.ResponseWriter, r *http.Request) {
