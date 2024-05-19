@@ -8,18 +8,6 @@ import (
 	"strings"
 )
 
-// User represents a user in the system
-type User struct {
-	Username string
-	Password string
-}
-
-var users = []User{
-	{"user1", "password1"},
-	{"user2", "password2"},
-	// Add more users as needed
-}
-
 type PeopleInfo struct {
 	Person_ID int
 	Email     string
@@ -38,8 +26,9 @@ var people = []PeopleInfo{
 func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/profile/", profilePage)
-	http.HandleFunc("/gagal", gagallogin)
+	http.HandleFunc("/profile/", profileHandler)
+	http.HandleFunc("/usernotfound", unregisteredUserHandler)
+	http.HandleFunc("/redirect", backLogoutHandler)
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -50,32 +39,19 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	// username := r.FormValue("username")
 	username := r.FormValue("useremail")
-	// password := r.FormValue("password")
 
-	fmt.Println("username test", username)
-	// fmt.Println("password test", password)
-	// fmt.Println("test loop")
-
-	for i, person := range people {
-		fmt.Println("here", i, person.Email)
+	for _, person := range people {
 		if username == person.Email {
-			fmt.Println("here 1")
-			fmt.Println("username check match", username)
 			person_id := strconv.Itoa(person.Person_ID)
-			fmt.Println("person_id check match", person_id)
 			http.Redirect(w, r, "/profile/"+person_id, http.StatusSeeOther)
-			fmt.Println("here 2")
 		}
 	}
-	fmt.Println("here 3")
-	fmt.Println("username check no match", username)
-	http.Redirect(w, r, "/gagal", http.StatusSeeOther)
-	fmt.Println("here 4")
+
+	http.Redirect(w, r, "/usernotfound", http.StatusSeeOther)
 }
 
-func profilePage(w http.ResponseWriter, r *http.Request) {
+func profileHandler(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	person_id, err := strconv.Atoi(parts[len(parts)-1])
 	if err != nil {
@@ -83,17 +59,14 @@ func profilePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// msg := "Profile Page"
 	for _, person := range people {
 		if person_id == person.Person_ID {
-			// fmt.Fprint(w, msg, person) // structnya "person"
 			tmpl, err := template.ParseFiles("templates/profile.html")
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			// Execute the template with the data and write the output to the response
 			err = tmpl.Execute(w, person)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -103,9 +76,9 @@ func profilePage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func gagallogin(w http.ResponseWriter, r *http.Request) {
+func unregisteredUserHandler(w http.ResponseWriter, r *http.Request) {
 	msg := "Email is not registered!"
-	// fmt.Fprint(w, msg)
+
 	tmpl, err := template.ParseFiles("templates/unregistered.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -117,4 +90,8 @@ func gagallogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func backLogoutHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
