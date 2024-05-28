@@ -55,12 +55,12 @@ func main() {
 	}
 	fmt.Println("Database connected! \n")
 
-	// createProduct("Cocomelon")
+	// createProduct("Cocomelon Test 2")
 	// updateProduct("Cocomelon LATEST UPDATE", "Cocomelon")
 	// getProductById(73)
-	// createVariant("Choco Almond", 50, 2)
+	createVariant("Choco Cheese", 50, 2)
 	// updateVariantById(1, 96)
-	deleteVariantById(8)
+	// deleteVariantById(8)
 	// getProductWithVariant("Matcha Almond")
 }
 
@@ -70,23 +70,22 @@ func createProduct(productname string) {
 	sqlStatement := `INSERT INTO products (product_name) VALUES (?)`
 	result, err := gelato_db.Exec(sqlStatement, productname)
 	if err != nil {
-		fmt.Println("err1")
-		panic(err)
+		fmt.Println("Duplicate product name!")
+		// panic(err)
+	} else {
+		lastInsertID, err := result.LastInsertId()
+		if err != nil {
+			fmt.Println("err2")
+			panic(err)
+		}
+		sqlRetrieve := `SELECT * FROM products WHERE id = ?`
+		err = gelato_db.QueryRow(sqlRetrieve, lastInsertID).Scan(&product.Id, &product.ProductName, &product.CreatedAt, &product.UpdatedAt)
+		if err != nil {
+			fmt.Println("err3")
+			panic(err)
+		}
+		fmt.Printf("Successfully added ID: %d, Product Name: %s, Created At: %s, Updated At: %s\n", product.Id, product.ProductName, product.CreatedAt, product.UpdatedAt)
 	}
-
-	lastInsertID, err := result.LastInsertId()
-	if err != nil {
-		fmt.Println("err2")
-		panic(err)
-	}
-
-	sqlRetrieve := `SELECT * FROM products WHERE id = ?`
-	err = gelato_db.QueryRow(sqlRetrieve, lastInsertID).Scan(&product.Id, &product.ProductName, &product.CreatedAt, &product.UpdatedAt)
-	if err != nil {
-		fmt.Println("err3")
-		panic(err)
-	}
-	fmt.Printf(product.ProductName, product.CreatedAt, product.UpdatedAt)
 }
 
 func updateProduct(oldproductname, newproductname string) {
@@ -127,23 +126,22 @@ func createVariant(varname string, varquantity, productid int) {
 	sqlStatement := `INSERT INTO variants (variant_name, quantity, product_id) VALUES (?, ?, ?)`
 	result, err := gelato_db.Exec(sqlStatement, varname, varquantity, productid)
 	if err != nil {
-		fmt.Println("err1")
-		panic(err)
+		fmt.Println("Duplicate variant name!")
+		// panic(err)
+	} else {
+		lastInsertID, err := result.LastInsertId()
+		if err != nil {
+			fmt.Println("err2")
+			panic(err)
+		}
+		sqlRetrieve := `SELECT * FROM variants WHERE id = ?`
+		err = gelato_db.QueryRow(sqlRetrieve, lastInsertID).Scan(&variant.Id, &variant.VariantName, &variant.Quantity, &variant.ProductId, &variant.CreatedAt, &variant.UpdatedAt)
+		if err != nil {
+			fmt.Println("err3")
+			panic(err)
+		}
+		fmt.Printf("Successfully created new variant! \nID: %d, Variant Name: %s, Quantity: %d, Product ID: %d, Created At: %s, Updated At: %s \n", variant.Id, variant.VariantName, variant.Quantity, variant.ProductId, variant.CreatedAt, variant.UpdatedAt)
 	}
-
-	lastInsertID, err := result.LastInsertId()
-	if err != nil {
-		fmt.Println("err2")
-		panic(err)
-	}
-
-	sqlRetrieve := `SELECT * FROM variants WHERE id = ?`
-	err = gelato_db.QueryRow(sqlRetrieve, lastInsertID).Scan(&variant.Id, &variant.VariantName, &variant.Quantity, &variant.ProductId, &variant.CreatedAt, &variant.UpdatedAt)
-	if err != nil {
-		fmt.Println("err3")
-		panic(err)
-	}
-	fmt.Printf("Successfully created new variant! \nID: %d, Variant Name: %s, Quantity: %d, Product ID: %d, Created At: %s, Updated At: %s \n", variant.Id, variant.VariantName, variant.Quantity, variant.ProductId, variant.CreatedAt, variant.UpdatedAt)
 }
 
 func updateVariantById(variantid, quantity int) {
