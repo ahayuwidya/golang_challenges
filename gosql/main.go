@@ -58,10 +58,10 @@ func main() {
 	// createProduct("Cocomelon Test 2")
 	// updateProduct("Cocomelon LATEST UPDATE", "Cocomelon")
 	// getProductById(73)
-	createVariant("Choco Cheese", 50, 2)
+	// createVariant("Choco Cheese", 50, 2)
 	// updateVariantById(1, 96)
 	// deleteVariantById(8)
-	// getProductWithVariant("Matcha Almond")
+	getProductWithVariant("Matcha Almond")
 }
 
 func createProduct(productname string) {
@@ -190,8 +190,9 @@ func getProductWithVariant(variantname string) {
 	sqlRetrieve := `SELECT variants.variant_name, products.product_name FROM products JOIN variants ON variants.product_id = products.id WHERE variants.variant_name = ?`
 	err := gelato_db.QueryRow(sqlRetrieve, variantname).Scan(&variant.VariantName, &product.ProductName)
 	if err != nil {
-		fmt.Println("err1")
-		panic(err)
+		fmt.Println("Variant or Product not found")
+		// panic(err)
+	} else {
+		fmt.Printf("Variant Name: %s, Product Name: %s \n", variant.VariantName, product.ProductName)
 	}
-	fmt.Printf("Variant Name: %s, Product Name: %s \n", variant.VariantName, product.ProductName)
 }
