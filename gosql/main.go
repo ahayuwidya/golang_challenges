@@ -60,8 +60,8 @@ func main() {
 	// getProductById(73)
 	// createVariant("Choco Almond", 50, 2)
 	// updateVariantById(1, 96)
-	// deleteVariantById(10)
-	getProductWithVariant("Matcha Almond")
+	deleteVariantById(8)
+	// getProductWithVariant("Matcha Almond")
 }
 
 func createProduct(productname string) {
@@ -172,17 +172,17 @@ func deleteVariantById(variantid int) {
 	sqlRetrieve := `SELECT * FROM variants WHERE id = ?`
 	err := gelato_db.QueryRow(sqlRetrieve, variantid).Scan(&variant.Id, &variant.VariantName, &variant.Quantity, &variant.ProductId, &variant.CreatedAt, &variant.UpdatedAt)
 	if err != nil {
-		fmt.Println("err1")
-		panic(err)
+		fmt.Println("Variant ID not found")
+		// panic(err)
+	} else {
+		sqlStatement := `DELETE FROM variants WHERE id = ?`
+		_, err = gelato_db.Exec(sqlStatement, variantid)
+		if err != nil {
+			fmt.Println("err1")
+			// panic(err)
+		}
+		fmt.Printf("Successfully deleted variant! \nID: %d, Variant Name: %s, Product ID: %d \n", variant.Id, variant.VariantName, variant.ProductId)
 	}
-
-	sqlStatement := `DELETE FROM variants WHERE id = ?`
-	_, err = gelato_db.Exec(sqlStatement, variantid)
-	if err != nil {
-		fmt.Println("err1")
-		panic(err)
-	}
-	fmt.Printf("Successfully deleted variant! \nID: %d, Variant Name: %s, Product ID: %d \n", variant.Id, variant.VariantName, variant.ProductId)
 }
 
 func getProductWithVariant(variantname string) {
