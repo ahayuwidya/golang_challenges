@@ -17,7 +17,7 @@ var (
 )
 
 // connect and migrate to DB
-func InitDB() *gorm.DB {
+func InitDB() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -31,7 +31,7 @@ func InitDB() *gorm.DB {
 	dsn_config := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, dbname)
 
 	// connect to DB
-	db, err := gorm.Open(mysql.Open(dsn_config), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn_config), &gorm.Config{})
 	if err != nil {
 		log.Fatal("error connecting to database: ", err)
 	}
@@ -44,32 +44,12 @@ func InitDB() *gorm.DB {
 	if db == nil {
 		log.Fatal("database connection is nil")
 	}
-
-	return db
 }
 
-// func MigrateDB() {
-
-// 	// migrate to DB
-// 	// db.Debug().AutoMigrate(models.Item{}, models.Order{}) // order_db.Debug().AutoMigrate(&models.Item{}, &models.Order{})
-// 	// db.Debug().AutoMigrate(models.Order{})
-
-// 	if db == nil {
-// 		// log.Fatal("CHECK!!!! Database connection is nil")
-// 		fmt.Println("CHECK!!!! Database connection is nil")
-// 	}
-// 	if db != nil {
-// 		// log.Fatal("CHECK!!!! Database connection is NOTTT nil")
-// 		fmt.Println("CHECK!!!! Database connection is NOTTT nil")
-// 	}
-// }
-
-// // access to DB
-// func GetDB() *gorm.DB {
-// 	if db == nil {
-// 		fmt.Println("Database is nil")
-// 	} else {
-// 		fmt.Println("Succcessfully get database")
-// 	}
-// 	return db
-// }
+func GetDB() *gorm.DB {
+	if db == nil {
+		log.Fatal("database is nil")
+	}
+	fmt.Println("Succcessfully get database")
+	return db
+}

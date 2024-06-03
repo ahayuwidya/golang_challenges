@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"rest_api/database"
-	"rest_api/models"
+	"rest_api/routers"
 )
 
 func main() {
@@ -11,34 +11,37 @@ func main() {
 	fmt.Println("main 1\n")
 	// database.MigrateDB()
 	// fmt.Println("main 2\n")
-	// database.GetDB()
+	database.GetDB()
+	fmt.Println("main 3")
+	// CreateOrder("test123") -> pindah ke controller
 	// fmt.Println("main 3")
-	CreateOrder("test123")
-	// fmt.Println("main 3")
+
+	var PORT = ":8080"
+	routers.StartApp().Run(PORT)
 }
 
-func CreateOrder(custname string) {
-	fmt.Println("hello CreateOrder")
-	orderitems_db := database.InitDB()
-	if orderitems_db == nil {
-		fmt.Println("!!!! orderitems_db Database connection is nil")
-	}
+// func CreateOrder(custname string) {
+// 	fmt.Println("hello CreateOrder")
+// 	orderitems_db := database.InitDB()
+// 	if orderitems_db == nil {
+// 		fmt.Println("!!!! orderitems_db Database connection is nil")
+// 	}
 
-	order := models.Order{
-		CustomerName: custname,
-	}
+// 	order := models.Order{
+// 		CustomerName: custname,
+// 	}
 
-	err := orderitems_db.Create(&order).Error
-	if err != nil {
-		fmt.Println("Error creating order data")
-		return
-	}
+// 	err := orderitems_db.Create(&order).Error
+// 	if err != nil {
+// 		fmt.Println("Error creating order data")
+// 		return
+// 	}
 
-	fmt.Println("New order data: ", order)
-}
+// 	fmt.Println("New order data: ", order)
+// }
 
-// Make endpoint to :
-// Create Order
-// URL: http://localhost:8080/orders
-// Method: POST
-// Body raw json: {"orderedAt":"2019-11-09T21:21:46+00:00","customerName":"Fitri","items":[{"name":"iPhone","description":"iPhone 11 Pro","quantity":2}]}
+// // Make endpoint to :
+// // Create Order
+// // URL: http://localhost:8080/orders
+// // Method: POST
+// // Body raw json: {"orderedAt":"2019-11-09T21:21:46+00:00","customerName":"Fitri","items":[{"name":"iPhone","description":"iPhone 11 Pro","quantity":2}]}
