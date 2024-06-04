@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// var OrderData = []models.Order{}
-
 func CreateOrder(ctx *gin.Context) {
 	db := database.GetDB()
 	Order := models.Order{}
@@ -32,7 +30,7 @@ func GetOrder(ctx *gin.Context) {
 	db := database.GetDB()
 	Orders := []models.Order{}
 
-	err := db.Debug().Find(&Orders).Error
+	err := db.Debug().Preload("Items").Find(&Orders).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -51,7 +49,7 @@ func GetOrderbyID(ctx *gin.Context) {
 	Orders := []models.Order{}
 	orderID := ctx.Param("orderID")
 
-	err := db.Debug().First(&Orders, orderID).Error
+	err := db.Debug().Preload("Items").First(&Orders, orderID).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
