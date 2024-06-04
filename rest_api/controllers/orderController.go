@@ -51,11 +51,11 @@ func GetOrderbyID(ctx *gin.Context) {
 	Orders := []models.Order{}
 	orderID := ctx.Param("orderID")
 
-	result := db.First(&Orders, orderID)
-	if result.Error != nil {
+	err := db.Debug().First(&Orders, orderID).Error
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
-			"message": result.Error.Error(),
+			"message": err.Error(),
 		})
 		return
 	}
