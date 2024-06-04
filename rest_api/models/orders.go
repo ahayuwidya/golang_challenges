@@ -27,3 +27,15 @@ func (o *Order) BeforeCreate(tx *gorm.DB) (err error) {
 	err = nil
 	return
 }
+
+// func (o *Order) BeforeDelete(tx *gorm.DB) (err error) {
+// 	_, errCreate := govalidator.ValidateStruct(o)
+
+// 	if errCreate != nil {
+// 		err = errCreate
+// 		return
+// 	}
+
+// 	err = nil
+// 	return
+// }
