@@ -30,9 +30,9 @@ func CreateOrder(ctx *gin.Context) {
 
 func GetOrder(ctx *gin.Context) {
 	db := database.GetDB()
-	orders := []models.Order{}
+	Orders := []models.Order{}
 
-	err := db.Debug().Find(&orders).Error
+	err := db.Debug().Find(&Orders).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -42,6 +42,34 @@ func GetOrder(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": orders,
+		"data": Orders,
 	})
 }
+
+func GetOrderbyID(ctx *gin.Context) {
+	db := database.GetDB()
+	Orders := []models.Order{}
+	orderID := ctx.Param("orderID")
+
+	result := db.First(&Orders, orderID)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": result.Error.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": Orders,
+	})
+}
+
+// func UpdateOrder() {
+
+// }
+
+// func DeleteOrder() {
+// 	db := database.GetDB()
+
+// }
