@@ -12,7 +12,7 @@ type Item struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	Quantity    int       `json:"quantity"`
-	OrderID     uint      `json:"order_id"` // ID from struct Order `gorm:"foreignKey:OrderID;references:ID"`
+	OrderID     uint      `json:"order_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
