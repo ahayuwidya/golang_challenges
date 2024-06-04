@@ -65,10 +65,11 @@ func GetOrderbyID(ctx *gin.Context) {
 	})
 }
 
-func UpdateOrderbyID(ctx *gin.Context) { // fix items;
+func UpdateOrderbyID(ctx *gin.Context) {
 	db := database.GetDB()
-	updatedOrder := models.Order{}
 	Orders := []models.Order{}
+	Items := []models.Item{}
+	updatedOrder := models.Order{}
 	orderID := ctx.Param("orderID")
 
 	if err := ctx.ShouldBindJSON(&updatedOrder); err != nil {
@@ -76,7 +77,16 @@ func UpdateOrderbyID(ctx *gin.Context) { // fix items;
 		return
 	}
 
-	err := db.Debug().Model(&Orders).Where("id = ?", orderID).Updates(&updatedOrder).Error
+	err := db.Debug().First(&Orders, orderID).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	err = db.Debug().Model(&Orders).Where("id = ?", orderID).Updates(&updatedOrder).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -84,11 +94,13 @@ func UpdateOrderbyID(ctx *gin.Context) { // fix items;
 		})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully updated record.",
-		"data":    updatedOrder,
-	})
-
+	err = db.Debug().Model(&Items).Where("order_id = ?", orderID).Updates(&updatedOrder.Items[0]).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+	}
 }
 
 func DeleteOrderbyID(ctx *gin.Context) {
