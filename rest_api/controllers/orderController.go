@@ -69,7 +69,21 @@ func GetOrderbyID(ctx *gin.Context) {
 
 // }
 
-// func DeleteOrder() {
-// 	db := database.GetDB()
+func DeleteOrder(ctx *gin.Context) {
+	db := database.GetDB()
+	Orders := []models.Order{}
+	orderID := ctx.Param("orderID")
 
-// }
+	err := db.Debug().Delete(&Orders, orderID).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Successfully deleted record.",
+	})
+}
