@@ -8,13 +8,13 @@ import (
 )
 
 type Item struct {
-	ID          uint `gorm:"primaryKey"`
-	Name        string
-	Description string
-	Quantity    int
-	OrderID     uint // ID from struct Order `gorm:"foreignKey:OrderID;references:ID"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          uint      `gorm:"primaryKey"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Quantity    int       `json:"quantity"`
+	OrderID     uint      `json:"order_id"` // ID from struct Order `gorm:"foreignKey:OrderID;references:ID"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (i *Item) BeforeCreate(tx *gorm.DB) (err error) {

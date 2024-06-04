@@ -86,17 +86,17 @@ func UpdateOrderbyID(ctx *gin.Context) { // fix items;
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Successfully updated record.",
-		"data":    Orders,
+		"data":    updatedOrder,
 	})
 
 }
 
-func DeleteOrder(ctx *gin.Context) { // fix hooks di orders.go; fix index after deletion di return data
+func DeleteOrderbyID(ctx *gin.Context) {
 	db := database.GetDB()
 	Orders := []models.Order{}
 	orderID := ctx.Param("orderID")
 
-	err := db.Debug().Delete(&Orders, orderID).Error
+	err := db.Debug().First(&Orders, orderID).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -105,8 +105,23 @@ func DeleteOrder(ctx *gin.Context) { // fix hooks di orders.go; fix index after 
 		return
 	}
 
+	err = db.Debug().Where("order_id = ?", orderID).Delete(&models.Item{}).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+	}
+
+	err = db.Debug().Where("id = ?", orderID).Delete(&Orders).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Successfully deleted record.",
-		"data":    Orders,
 	})
 }

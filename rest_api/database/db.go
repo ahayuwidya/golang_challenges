@@ -38,8 +38,8 @@ func InitDB() {
 	fmt.Println("Successfully connected to database.")
 
 	// migrate to DB
-	db.AutoMigrate(&models.Item{})
-	db.AutoMigrate(&models.Order{})
+	db.AutoMigrate(&models.Order{}, &models.Item{})
+	// db.AutoMigrate(&models.Item{})
 	fmt.Println("Database migrated successfully.")
 	if db == nil {
 		log.Fatal("database connection is nil")
