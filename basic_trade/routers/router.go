@@ -2,6 +2,7 @@ package routers
 
 import (
 	"basic_trade/controllers"
+	"basic_trade/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +16,12 @@ func StartApp() *gin.Engine {
 		authRouter.POST("/login", controllers.AdminLogin)
 	}
 
-	// router.POST("/products", controllers.CreateProduct)
+	productRouter := router.Group("/products")
+	{
+		productRouter.GET("/", controllers.GetProduct)
+		productRouter.Use(middlewares.Authentication())
+		productRouter.POST("/", controllers.CreateProduct)
+	}
 
 	return router
 }
