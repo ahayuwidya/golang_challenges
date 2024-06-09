@@ -46,7 +46,6 @@ func CreateProduct(ctx *gin.Context) {
 
 func GetProduct(ctx *gin.Context) {
 	db := database.GetDB()
-
 	Products := []models.Product{}
 
 	err := db.Debug().Find(&Products).Error // db.Debug().Preload("Admin").Find(&Products).Error
@@ -61,4 +60,24 @@ func GetProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": Products,
 	})
+}
+
+func GetProductbyID(ctx *gin.Context) {
+	db := database.GetDB()
+	Products := []models.Product{}
+	productUUID := ctx.Param("productUUID")
+
+	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": Products,
+	})
+
 }
