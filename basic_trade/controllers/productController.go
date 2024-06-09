@@ -62,7 +62,7 @@ func GetProduct(ctx *gin.Context) {
 	})
 }
 
-func GetProductbyID(ctx *gin.Context) {
+func GetProductbyUUID(ctx *gin.Context) {
 	db := database.GetDB()
 	Products := []models.Product{}
 	productUUID := ctx.Param("productUUID")
@@ -79,5 +79,35 @@ func GetProductbyID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": Products,
 	})
+
+}
+
+func UpdateProductbyUUID(ctx *gin.Context) {
+	db := database.GetDB()
+	Products := []models.Product{}
+	updatedProduct := models.Product{}
+	productUUID := ctx.Param("productUUID")
+
+	if err := ctx.ShouldBindJSON(&updatedProduct); err != nil {
+		ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	err = db.Debug().Model(&Products).Where("uuid = ?", productUUID).Updates(&updatedProduct).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+	}
 
 }

@@ -19,9 +19,10 @@ func StartApp() *gin.Engine {
 	productRouter := router.Group("/products")
 	{
 		productRouter.GET("/", controllers.GetProduct)
-		productRouter.GET("/:productUUID", controllers.GetProductbyID)
+		productRouter.GET("/:productUUID", controllers.GetProductbyUUID)
 		productRouter.Use(middlewares.Authentication())
 		productRouter.POST("/", controllers.CreateProduct)
+		productRouter.PUT("/:productUUID", controllers.UpdateProductbyUUID)
 	}
 
 	return router
