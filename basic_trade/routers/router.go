@@ -25,5 +25,11 @@ func StartApp() *gin.Engine {
 		productRouter.PUT("/:productUUID", controllers.UpdateProductbyUUID)
 	}
 
+	variantRouter := router.Group("/variants")
+	{
+		variantRouter.Use(middlewares.Authentication())
+		variantRouter.POST("/", controllers.CreateVariant)
+	}
+
 	return router
 }
