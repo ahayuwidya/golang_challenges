@@ -20,6 +20,7 @@ func StartApp() *gin.Engine {
 	{
 		productRouter.GET("/", controllers.GetProduct)
 		productRouter.GET("/:productUUID", controllers.GetProductbyUUID)
+
 		productRouter.Use(middlewares.Authentication())
 		productRouter.POST("/", controllers.CreateProduct)
 		productRouter.PUT("/:productUUID", controllers.UpdateProductbyUUID)
@@ -28,8 +29,11 @@ func StartApp() *gin.Engine {
 	variantRouter := router.Group("/variants")
 	{
 		variantRouter.GET("/", controllers.GetVariant)
+		variantRouter.GET("/:variantUUID", controllers.GetVariantbyUUID)
+
 		variantRouter.Use(middlewares.Authentication())
 		variantRouter.POST("/", controllers.CreateVariant)
+		variantRouter.PUT("/:variantUUID", controllers.UpdateVariantbyUUID)
 	}
 
 	return router

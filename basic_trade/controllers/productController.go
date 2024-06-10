@@ -84,13 +84,16 @@ func GetProductbyUUID(ctx *gin.Context) {
 
 func UpdateProductbyUUID(ctx *gin.Context) {
 	db := database.GetDB()
+	contentType := helpers.GetContentType(ctx)
+
 	Products := []models.Product{}
 	updatedProduct := models.Product{}
 	productUUID := ctx.Param("productUUID")
 
-	if err := ctx.ShouldBindJSON(&updatedProduct); err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, err)
-		return
+	if contentType == appJSON {
+		ctx.ShouldBindJSON(&updatedProduct)
+	} else {
+		ctx.ShouldBind(&updatedProduct)
 	}
 
 	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
@@ -109,5 +112,4 @@ func UpdateProductbyUUID(ctx *gin.Context) {
 			"message": err.Error(),
 		})
 	}
-
 }
