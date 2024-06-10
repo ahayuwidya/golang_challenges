@@ -27,6 +27,7 @@ func StartApp() *gin.Engine {
 
 	variantRouter := router.Group("/variants")
 	{
+		variantRouter.GET("/", controllers.GetVariant)
 		variantRouter.Use(middlewares.Authentication())
 		variantRouter.POST("/", controllers.CreateVariant)
 	}
