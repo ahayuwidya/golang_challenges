@@ -6,3 +6,4 @@ go get -u github.com/asaskevich/govalidator
 go get -u github.com/google/uuid
 go get -u github.com/golang-jwt/jwt/v5
 go get -u golang.org/x/crypto
+go get -u github.com/cloudinary/cloudinary-go/v2

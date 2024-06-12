@@ -1,7 +1,7 @@
 package database
 
 import (
-	"basic_trade/models"
+	"basic_trade/models/entity"
 	"fmt"
 	"log"
 	"os"
@@ -37,7 +37,7 @@ func InitDB() {
 	fmt.Println("Successfully connected to database.")
 
 	// migrate to DB
-	db.AutoMigrate(&models.Admin{}, &models.Product{}, &models.Variant{})
+	db.AutoMigrate(&entity.Admin{}, &entity.Product{}, &entity.Variant{})
 	fmt.Println("Database migrated successfully.")
 	if db == nil {
 		log.Fatal("database connection is nil")

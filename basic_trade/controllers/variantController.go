@@ -1,149 +1,149 @@
 package controllers
 
-import (
-	"basic_trade/database"
-	"basic_trade/helpers"
-	"basic_trade/models"
-	"net/http"
+// import (
+// 	"basic_trade/database"
+// 	"basic_trade/helpers"
+// 	"basic_trade/models"
+// 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	jwt5 "github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-)
+// 	"github.com/gin-gonic/gin"
+// 	jwt5 "github.com/golang-jwt/jwt/v5"
+// 	"github.com/google/uuid"
+// )
 
-func CreateVariant(ctx *gin.Context) {
-	db := database.GetDB()
+// func CreateVariant(ctx *gin.Context) {
+// 	db := database.GetDB()
 
-	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
-	adminID := uint(adminData["id"].(float64))
+// 	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
+// 	adminID := uint(adminData["id"].(float64))
 
-	Product := models.Product{}
-	Variant := models.Variant{}
+// 	Product := models.Product{}
+// 	Variant := models.Variant{}
 
-	contentType := helpers.GetContentType(ctx)
-	if contentType == appJSON {
-		ctx.ShouldBindJSON(&Variant)
-	} else {
-		ctx.ShouldBind(&Variant)
-	}
+// 	contentType := helpers.GetContentType(ctx)
+// 	if contentType == appJSON {
+// 		ctx.ShouldBindJSON(&Variant)
+// 	} else {
+// 		ctx.ShouldBind(&Variant)
+// 	}
 
-	Product.AdminID = adminID
-	newUUID := uuid.New()
-	Variant.UUID = newUUID.String()
+// 	Product.AdminID = adminID
+// 	newUUID := uuid.New()
+// 	Variant.UUID = newUUID.String()
 
-	err := db.Debug().Create(&Variant).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
-		})
-		return
-	}
+// 	err := db.Debug().Create(&Variant).Error
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error":   "Bad request",
+// 			"message": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": Variant,
-	})
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"data": Variant,
+// 	})
 
-}
+// }
 
-func GetVariant(ctx *gin.Context) {
-	db := database.GetDB()
-	Variants := []models.Variant{}
+// func GetVariant(ctx *gin.Context) {
+// 	db := database.GetDB()
+// 	Variants := []models.Variant{}
 
-	err := db.Debug().Find(&Variants).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request.",
-			"message": err.Error(),
-		})
-		return
-	}
+// 	err := db.Debug().Find(&Variants).Error
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error":   "Bad request.",
+// 			"message": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": Variants,
-	})
-}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"data": Variants,
+// 	})
+// }
 
-func GetVariantbyUUID(ctx *gin.Context) {
-	db := database.GetDB()
-	Variants := models.Variant{}
-	variantUUID := ctx.Param("variantUUID")
+// func GetVariantbyUUID(ctx *gin.Context) {
+// 	db := database.GetDB()
+// 	Variants := models.Variant{}
+// 	variantUUID := ctx.Param("variantUUID")
 
-	err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
-		})
-		return
-	}
+// 	err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error":   "Bad request",
+// 			"message": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": Variants,
-	})
-}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"data": Variants,
+// 	})
+// }
 
-func UpdateVariantbyUUID(ctx *gin.Context) {
-	db := database.GetDB()
-	contentType := helpers.GetContentType(ctx)
+// func UpdateVariantbyUUID(ctx *gin.Context) {
+// 	db := database.GetDB()
+// 	contentType := helpers.GetContentType(ctx)
 
-	Variants := []models.Variant{}
-	updatedVariant := models.Variant{}
-	variantUUID := ctx.Param("variantUUID")
+// 	Variants := []models.Variant{}
+// 	updatedVariant := models.Variant{}
+// 	variantUUID := ctx.Param("variantUUID")
 
-	if contentType == appJSON {
-		ctx.ShouldBindJSON(&updatedVariant)
-	} else {
-		ctx.ShouldBind(&updatedVariant)
-	}
+// 	if contentType == appJSON {
+// 		ctx.ShouldBindJSON(&updatedVariant)
+// 	} else {
+// 		ctx.ShouldBind(&updatedVariant)
+// 	}
 
-	err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
-		})
-		return
-	}
+// 	err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error":   "Bad request",
+// 			"message": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	err = db.Debug().Model(&Variants).Where("uuid = ?", variantUUID).Updates(&updatedVariant).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
-		})
-	}
-}
+// 	err = db.Debug().Model(&Variants).Where("uuid = ?", variantUUID).Updates(&updatedVariant).Error
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error":   "Bad request",
+// 			"message": err.Error(),
+// 		})
+// 	}
+// }
 
-func DeleteVariantbyUUID(ctx *gin.Context) {
-	db := database.GetDB()
+// func DeleteVariantbyUUID(ctx *gin.Context) {
+// 	db := database.GetDB()
 
-	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
-	adminID := uint(adminData["id"].(float64))
+// 	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
+// 	adminID := uint(adminData["id"].(float64))
 
-	Product := models.Product{}
-	Variants := []models.Variant{}
-	variantUUID := ctx.Param("variantUUID")
-	Product.AdminID = adminID
+// 	Product := models.Product{}
+// 	Variants := []models.Variant{}
+// 	variantUUID := ctx.Param("variantUUID")
+// 	Product.AdminID = adminID
 
-	err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
-		})
-		return
-	}
+// 	err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error":   "Bad request",
+// 			"message": err.Error(),
+// 		})
+// 		return
+// 	}
 
-	err = db.Debug().Where("uuid = ?", variantUUID).Delete(&models.Variant{}).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
-		})
-	}
+// 	err = db.Debug().Where("uuid = ?", variantUUID).Delete(&models.Variant{}).Error
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error":   "Bad request",
+// 			"message": err.Error(),
+// 		})
+// 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully deleted record.",
-	})
-}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"message": "Successfully deleted record.",
+// 	})
+// }

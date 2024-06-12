@@ -3,7 +3,7 @@ package controllers
 import (
 	"basic_trade/database"
 	"basic_trade/helpers"
-	"basic_trade/models"
+	"basic_trade/models/entity"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ var (
 func AdminRegister(ctx *gin.Context) {
 	db := database.GetDB()
 	contentType := helpers.GetContentType(ctx)
-	Admin := models.Admin{}
+	Admin := entity.Admin{}
 
 	if contentType == appJSON {
 		ctx.ShouldBindJSON(&Admin)
@@ -48,7 +48,7 @@ func AdminRegister(ctx *gin.Context) {
 func AdminLogin(ctx *gin.Context) {
 	db := database.GetDB()
 	contentType := helpers.GetContentType(ctx)
-	Admin := models.Admin{}
+	Admin := entity.Admin{}
 
 	if contentType == appJSON {
 		ctx.ShouldBindJSON(&Admin)
