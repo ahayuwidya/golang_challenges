@@ -23,7 +23,7 @@ func StartApp() *gin.Engine {
 
 		productRouter.Use(middlewares.Authentication())
 		productRouter.POST("/", controllers.CreateProduct)
-		productRouter.PUT("/:productUUID", controllers.UpdateProductbyUUID)
+		productRouter.PUT("/:productUUID", middlewares.ProductAuthorization(), controllers.UpdateProductbyUUID)
 	}
 
 	variantRouter := router.Group("/variants")

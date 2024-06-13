@@ -60,31 +60,6 @@ func CreateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": Product,
 	})
-
-	// Product := models.Product{}
-
-	// if contentType == appJSON {
-	// 	ctx.ShouldBindJSON(&Product)
-	// } else {
-	// 	ctx.ShouldBind(&Product)
-	// }
-
-	// Product.AdminID = adminID
-	// newUUID := uuid.New()
-	// Product.UUID = newUUID.String()
-
-	// err := db.Debug().Create(&Product).Error
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{
-	// 		"error":   "Bad request",
-	// 		"message": err.Error(),
-	// 	})
-	// 	return
-	// }
-
-	// ctx.JSON(http.StatusOK, gin.H{
-	// 	"data": Product,
-	// })
 }
 
 func GetProduct(ctx *gin.Context) {
@@ -128,11 +103,16 @@ func GetProductbyUUID(ctx *gin.Context) {
 
 func UpdateProductbyUUID(ctx *gin.Context) {
 	db := database.GetDB()
+
+	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
 	contentType := helpers.GetContentType(ctx)
 
 	Products := []entity.Product{}
 	updatedProduct := entity.Product{}
 	productUUID := ctx.Param("productUUID")
+
+	updatedProduct.AdminID = uint(adminData["id"].(float64))
+	updatedProduct.UUID = productUUID
 
 	if contentType == appJSON {
 		ctx.ShouldBindJSON(&updatedProduct)
@@ -156,4 +136,9 @@ func UpdateProductbyUUID(ctx *gin.Context) {
 			"message": err.Error(),
 		})
 	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": updatedProduct,
+	})
+
 }
