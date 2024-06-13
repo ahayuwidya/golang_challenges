@@ -140,5 +140,47 @@ func UpdateProductbyUUID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": updatedProduct,
 	})
+}
 
+func DeleteProductbyUUID(ctx *gin.Context) {
+	db := database.GetDB()
+
+	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
+	contentType := helpers.GetContentType(ctx)
+
+	Products := []entity.Product{}
+	productToDelete := entity.Product{}
+	// updatedProduct := entity.Product{}
+	productUUID := ctx.Param("productUUID")
+
+	productToDelete.AdminID = uint(adminData["id"].(float64))
+	productToDelete.UUID = productUUID
+
+	if contentType == appJSON {
+		ctx.ShouldBindJSON(&productToDelete)
+	} else {
+		ctx.ShouldBind(&productToDelete)
+	}
+
+	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// err = db.Debug().Where("uuid = ?", variantUUID).Delete(&entity.Variant{}).Error
+	err = db.Debug().Model(&Products).Where("uuid = ?", productUUID).Delete(&productToDelete).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Successfully deleted record.",
+	})
 }
