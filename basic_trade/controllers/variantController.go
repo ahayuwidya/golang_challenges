@@ -11,17 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// import (
-// 	"basic_trade/database"
-// 	"basic_trade/helpers"
-// 	"basic_trade/models"
-// 	"net/http"
-
-// 	"github.com/gin-gonic/gin"
-// 	jwt5 "github.com/golang-jwt/jwt/v5"
-// 	"github.com/google/uuid"
-// )
-
 func CreateVariant(ctx *gin.Context) {
 	db := database.GetDB()
 
