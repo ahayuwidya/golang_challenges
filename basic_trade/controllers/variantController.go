@@ -90,12 +90,6 @@ func UpdateVariantbyUUID(ctx *gin.Context) {
 	Variants := []entity.Variant{}
 	updatedVariant := entity.Variant{}
 	variantUUID := ctx.Param("variantUUID")
-
-	// variant -> get product id
-	// product id -> get struct product
-	// admin id -> product . admin id
-	// updatedVariant.AdminID = uint(adminData["id"].(float64))
-
 	updatedVariant.UUID = variantUUID
 
 	if contentType == appJSON {
@@ -124,48 +118,23 @@ func UpdateVariantbyUUID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": updatedVariant,
 	})
-
-	// db := database.GetDB()
-	// contentType := helpers.GetContentType(ctx)
-
-	// Variants := []entity.Variant{}
-	// updatedVariant := entity.Variant{}
-	// variantUUID := ctx.Param("variantUUID")
-
-	// if contentType == appJSON {
-	// 	ctx.ShouldBindJSON(&updatedVariant)
-	// } else {
-	// 	ctx.ShouldBind(&updatedVariant)
-	// }
-
-	// err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{
-	// 		"error":   "Bad request",
-	// 		"message": err.Error(),
-	// 	})
-	// 	return
-	// }
-
-	// err = db.Debug().Model(&Variants).Where("uuid = ?", variantUUID).Updates(&updatedVariant).Error
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{
-	// 		"error":   "Bad request",
-	// 		"message": err.Error(),
-	// 	})
-	// }
 }
 
 func DeleteVariantbyUUID(ctx *gin.Context) {
 	db := database.GetDB()
+	// adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
+	contentType := helpers.GetContentType(ctx)
 
-	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
-	adminID := uint(adminData["id"].(float64))
-
-	Product := entity.Product{}
 	Variants := []entity.Variant{}
+	variantToDelete := entity.Variant{}
 	variantUUID := ctx.Param("variantUUID")
-	Product.AdminID = adminID
+	variantToDelete.UUID = variantUUID
+
+	if contentType == appJSON {
+		ctx.ShouldBindJSON(&variantToDelete)
+	} else {
+		ctx.ShouldBind(&variantToDelete)
+	}
 
 	err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
 	if err != nil {
@@ -176,7 +145,7 @@ func DeleteVariantbyUUID(ctx *gin.Context) {
 		return
 	}
 
-	err = db.Debug().Where("uuid = ?", variantUUID).Delete(&entity.Variant{}).Error
+	err = db.Debug().Model(&Variants).Where("uuid = ?", variantUUID).Delete(&variantToDelete).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
