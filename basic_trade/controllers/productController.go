@@ -5,6 +5,7 @@ import (
 	"basic_trade/helpers"
 	"basic_trade/models/entity"
 	"basic_trade/models/request"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -86,72 +87,73 @@ func CreateProduct(ctx *gin.Context) {
 	// })
 }
 
-// func GetProduct(ctx *gin.Context) {
-// 	db := database.GetDB()
-// 	Products := []models.Product{}
+func GetProduct(ctx *gin.Context) {
+	db := database.GetDB()
+	Products := []entity.Product{}
 
-// 	err := db.Debug().Find(&Products).Error // db.Debug().Preload("Admin").Find(&Products).Error
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{
-// 			"error":   "Bad request.",
-// 			"message": err.Error(),
-// 		})
-// 		return
-// 	}
+	err := db.Debug().Find(&Products).Error // db.Debug().Preload("Admin").Find(&Products).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request.",
+			"message": err.Error(),
+		})
+		return
+	}
 
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"data": Products,
-// 	})
-// }
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": Products,
+	})
+}
 
-// func GetProductbyUUID(ctx *gin.Context) {
-// 	db := database.GetDB()
-// 	Products := []models.Product{}
-// 	productUUID := ctx.Param("productUUID")
+func GetProductbyUUID(ctx *gin.Context) {
+	db := database.GetDB()
+	Products := []entity.Product{}
+	productUUID := ctx.Param("productUUID")
+	fmt.Println("here 0", productUUID)
 
-// 	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{
-// 			"error":   "Bad request",
-// 			"message": err.Error(),
-// 		})
-// 		return
-// 	}
+	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+	fmt.Println("here 1")
 
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"data": Products,
-// 	})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": Products,
+	})
+}
 
-// }
+func UpdateProductbyUUID(ctx *gin.Context) {
+	db := database.GetDB()
+	contentType := helpers.GetContentType(ctx)
 
-// func UpdateProductbyUUID(ctx *gin.Context) {
-// 	db := database.GetDB()
-// 	contentType := helpers.GetContentType(ctx)
+	Products := []entity.Product{}
+	updatedProduct := entity.Product{}
+	productUUID := ctx.Param("productUUID")
 
-// 	Products := []models.Product{}
-// 	updatedProduct := models.Product{}
-// 	productUUID := ctx.Param("productUUID")
+	if contentType == appJSON {
+		ctx.ShouldBindJSON(&updatedProduct)
+	} else {
+		ctx.ShouldBind(&updatedProduct)
+	}
 
-// 	if contentType == appJSON {
-// 		ctx.ShouldBindJSON(&updatedProduct)
-// 	} else {
-// 		ctx.ShouldBind(&updatedProduct)
-// 	}
+	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
 
-// 	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{
-// 			"error":   "Bad request",
-// 			"message": err.Error(),
-// 		})
-// 		return
-// 	}
-
-// 	err = db.Debug().Model(&Products).Where("uuid = ?", productUUID).Updates(&updatedProduct).Error
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{
-// 			"error":   "Bad request",
-// 			"message": err.Error(),
-// 		})
-// 	}
-// }
+	err = db.Debug().Model(&Products).Where("uuid = ?", productUUID).Updates(&updatedProduct).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+	}
+}
