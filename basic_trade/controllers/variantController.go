@@ -84,11 +84,19 @@ func GetVariantbyUUID(ctx *gin.Context) {
 
 func UpdateVariantbyUUID(ctx *gin.Context) {
 	db := database.GetDB()
+	// adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
 	contentType := helpers.GetContentType(ctx)
 
 	Variants := []entity.Variant{}
 	updatedVariant := entity.Variant{}
 	variantUUID := ctx.Param("variantUUID")
+
+	// variant -> get product id
+	// product id -> get struct product
+	// admin id -> product . admin id
+	// updatedVariant.AdminID = uint(adminData["id"].(float64))
+
+	updatedVariant.UUID = variantUUID
 
 	if contentType == appJSON {
 		ctx.ShouldBindJSON(&updatedVariant)
@@ -112,6 +120,40 @@ func UpdateVariantbyUUID(ctx *gin.Context) {
 			"message": err.Error(),
 		})
 	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": updatedVariant,
+	})
+
+	// db := database.GetDB()
+	// contentType := helpers.GetContentType(ctx)
+
+	// Variants := []entity.Variant{}
+	// updatedVariant := entity.Variant{}
+	// variantUUID := ctx.Param("variantUUID")
+
+	// if contentType == appJSON {
+	// 	ctx.ShouldBindJSON(&updatedVariant)
+	// } else {
+	// 	ctx.ShouldBind(&updatedVariant)
+	// }
+
+	// err := db.Debug().Where("uuid = ?", variantUUID).First(&Variants).Error
+	// if err != nil {
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{
+	// 		"error":   "Bad request",
+	// 		"message": err.Error(),
+	// 	})
+	// 	return
+	// }
+
+	// err = db.Debug().Model(&Variants).Where("uuid = ?", variantUUID).Updates(&updatedVariant).Error
+	// if err != nil {
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{
+	// 		"error":   "Bad request",
+	// 		"message": err.Error(),
+	// 	})
+	// }
 }
 
 func DeleteVariantbyUUID(ctx *gin.Context) {

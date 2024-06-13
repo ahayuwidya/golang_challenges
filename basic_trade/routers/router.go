@@ -34,7 +34,7 @@ func StartApp() *gin.Engine {
 
 		variantRouter.Use(middlewares.Authentication())
 		variantRouter.POST("/", controllers.CreateVariant)
-		variantRouter.PUT("/:variantUUID", controllers.UpdateVariantbyUUID)
+		variantRouter.PUT("/:variantUUID", middlewares.VariantAuthorization(), controllers.UpdateVariantbyUUID)
 		variantRouter.DELETE("/:variantUUID", controllers.DeleteVariantbyUUID)
 	}
 

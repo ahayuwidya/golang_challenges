@@ -38,3 +38,53 @@ func ProductAuthorization() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func VariantAuthorization() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		db := database.GetDB()
+		variantUUID := ctx.Param("variantUUID")
+
+		adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
+		adminID := uint(adminData["id"].(float64))
+
+		getVariant := entity.Variant{}
+		err := db.Where("uuid = ?", variantUUID).First(&getVariant).Error
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+				"error":   err.Error(),
+				"message": "Data Not Found",
+			})
+			return
+		}
+
+		productID := getVariant.ProductID
+		Products := entity.Product{}
+
+		// select admin id from products where productid == productid
+
+		err = db.Select("admin_id").Where("id = ?", productID).First(&Products).Error
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+				"error":   err.Error(),
+				"message": "Data Not Found",
+			})
+			return
+		}
+
+		// variant -> ambil product id
+		// product id -> ambil struct product . admin ID
+
+		// variantAdminID
+
+		if Products.AdminID != adminID {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error":   "Unauthorized",
+				"message": "You are not allowed to access this data",
+			})
+			return
+		}
+
+		ctx.Next()
+
+	}
+}
