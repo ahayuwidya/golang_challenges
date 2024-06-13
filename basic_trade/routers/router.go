@@ -26,16 +26,16 @@ func StartApp() *gin.Engine {
 		productRouter.PUT("/:productUUID", controllers.UpdateProductbyUUID)
 	}
 
-	// variantRouter := router.Group("/variants")
-	// {
-	// 	variantRouter.GET("/", controllers.GetVariant)
-	// 	variantRouter.GET("/:variantUUID", controllers.GetVariantbyUUID)
+	variantRouter := router.Group("/variants")
+	{
+		variantRouter.GET("/", controllers.GetVariant)
+		variantRouter.GET("/:variantUUID", controllers.GetVariantbyUUID)
 
-	// 	variantRouter.Use(middlewares.Authentication())
-	// 	variantRouter.POST("/", controllers.CreateVariant)
-	// 	variantRouter.PUT("/:variantUUID", controllers.UpdateVariantbyUUID)
-	// 	variantRouter.DELETE("/:variantUUID", controllers.DeleteVariantbyUUID)
-	// }
+		variantRouter.Use(middlewares.Authentication())
+		variantRouter.POST("/", controllers.CreateVariant)
+		variantRouter.PUT("/:variantUUID", controllers.UpdateVariantbyUUID)
+		variantRouter.DELETE("/:variantUUID", controllers.DeleteVariantbyUUID)
+	}
 
 	return router
 }
