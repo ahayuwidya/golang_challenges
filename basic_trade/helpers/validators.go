@@ -13,3 +13,7 @@ func IsValidImageExtension(imageStr string) bool {
 	}
 	return false
 }
+
+func IsValidImageSize(imageSize int) bool {
+	return imageSize < 5000000
+}
