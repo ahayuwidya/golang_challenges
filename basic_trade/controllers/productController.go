@@ -31,35 +31,43 @@ func CreateProduct(ctx *gin.Context) {
 	newUUID := uuid.New()
 	productReq.UUID = newUUID.String()
 
-	// Extract the filename without extension
-	fileName := helpers.RemoveExtension(productReq.ImageURL.Filename)
-	uploadResult, err := helpers.UploadFile(productReq.ImageURL, fileName)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+	// Check image requirements
+	if helpers.IsValidImageExtension(productReq.ImageURL.Filename) {
+		// Extract the filename without extension
+		fileName := helpers.RemoveExtension(productReq.ImageURL.Filename)
+		uploadResult, err := helpers.UploadFile(productReq.ImageURL, fileName)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		Product := entity.Product{
+			UUID:     productReq.UUID,
+			Name:     productReq.Name,
+			ImageURL: uploadResult,
+			AdminID:  productReq.AdminID,
+		}
+
+		err = db.Debug().Create(&Product).Error
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error":   "Bad request",
+				"message": err.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": Product,
 		})
-		return
-	}
-
-	Product := entity.Product{
-		UUID:     productReq.UUID,
-		Name:     productReq.Name,
-		ImageURL: uploadResult,
-		AdminID:  productReq.AdminID,
-	}
-
-	err = db.Debug().Create(&Product).Error
-	if err != nil {
+	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
-			"message": err.Error(),
+			"message": "File extension invalid.",
 		})
-		return
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": Product,
-	})
 }
 
 func GetProduct(ctx *gin.Context) {
