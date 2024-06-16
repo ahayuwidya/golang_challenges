@@ -120,12 +120,21 @@ func UpdateProductbyUUID(ctx *gin.Context) {
 	adminID := uint(adminData["id"].(float64))
 	productUUID := ctx.Param("productUUID")
 
-	Products := entity.Product{}
+	Products := []entity.Product{}
 	updatedProductReq := request.ProductRequest{}
 	if contentType == appJSON {
 		ctx.ShouldBindJSON(&updatedProductReq)
 	} else {
 		ctx.ShouldBind(&updatedProductReq)
+	}
+
+	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err,
+		})
+		return
 	}
 
 	updatedProductReq.AdminID = adminID
