@@ -60,8 +60,6 @@ func VariantAuthorization() gin.HandlerFunc {
 		productID := getVariant.ProductID
 		Products := entity.Product{}
 
-		// select admin id from products where productid == productid
-
 		err = db.Select("admin_id").Where("id = ?", productID).First(&Products).Error
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
@@ -70,11 +68,6 @@ func VariantAuthorization() gin.HandlerFunc {
 			})
 			return
 		}
-
-		// variant -> ambil product id
-		// product id -> ambil struct product . admin ID
-
-		// variantAdminID
 
 		if Products.AdminID != adminID {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

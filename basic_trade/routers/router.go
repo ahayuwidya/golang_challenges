@@ -12,7 +12,7 @@ func StartApp() *gin.Engine {
 
 	authRouter := router.Group("/auth")
 	{
-		authRouter.POST("/register", controllers.AdminRegister) // url/auth/register
+		authRouter.POST("/register", controllers.AdminRegister)
 		authRouter.POST("/login", controllers.AdminLogin)
 	}
 
