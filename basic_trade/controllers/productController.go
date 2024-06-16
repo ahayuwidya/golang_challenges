@@ -175,24 +175,15 @@ func DeleteProductbyUUID(ctx *gin.Context) {
 		ctx.ShouldBind(&productToDelete)
 	}
 
-	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
+	err := db.Debug().Model(&Products).Where("uuid = ?", productUUID).Delete(&productToDelete).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
 			"message": err.Error(),
 		})
-		return
-	}
-
-	err = db.Debug().Model(&Products).Where("uuid = ?", productUUID).Delete(&productToDelete).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Successfully deleted record.",
 		})
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully deleted record.",
-	})
 }

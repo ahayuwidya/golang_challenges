@@ -8,7 +8,7 @@ import (
 )
 
 type Variant struct {
-	ID          uint       `gorm:"primaryKey"  valid:"int"`
+	ID          uint       `gorm:"primaryKey;autoIncrement" valid:"int"`
 	UUID        string     `gorm:"not null" valid:"uuid"`
 	VariantName string     `gorm:"not null" json:"variant_name" form:"variant_name" valid:"required"`
 	Quantity    uint       `gorm:"not null" json:"quantity" form:"quantity" valid:"int"`
