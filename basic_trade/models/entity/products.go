@@ -1,14 +1,29 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"github.com/asaskevich/govalidator"
+	"gorm.io/gorm"
+)
 
 type Product struct {
-	ID        uint `gorm:"primaryKey"`
-	UUID      string
-	Name      string `json:"name" valid:"required,alpha"`
-	ImageURL  string `json:"image_url"`
-	AdminID   uint   `json:"admin_id"`
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
-	Variants  []Variant `gorm:"foreignKey:ProductID"`
+	ID        uint       `gorm:"primaryKey" valid:"int"`
+	UUID      string     `gorm:"not null" valid:"uuid"`
+	Name      string     `gorm:"not null" json:"name" valid:"required"`
+	ImageURL  string     `gorm:"not null" json:"image_url" valid:"url"`
+	AdminID   uint       `gorm:"not null" json:"admin_id" valid:"int"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
+	Variants  []Variant  `gorm:"foreignKey:ProductID"`
+}
+
+func (p *Product) BeforeCreate(tx *gorm.DB) (err error) {
+	_, errCreate := govalidator.ValidateStruct(p)
+
+	if errCreate != nil {
+		err = errCreate
+		return
+	}
+	return
 }
