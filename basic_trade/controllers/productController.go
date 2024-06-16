@@ -5,7 +5,6 @@ import (
 	"basic_trade/helpers"
 	"basic_trade/models/entity"
 	"basic_trade/models/request"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -98,7 +97,6 @@ func GetProductbyUUID(ctx *gin.Context) {
 	db := database.GetDB()
 	Products := []entity.Product{}
 	productUUID := ctx.Param("productUUID")
-	fmt.Println("here 0", productUUID)
 
 	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
 	if err != nil {
@@ -108,7 +106,6 @@ func GetProductbyUUID(ctx *gin.Context) {
 		})
 		return
 	}
-	fmt.Println("here 1")
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": Products,
@@ -120,40 +117,62 @@ func UpdateProductbyUUID(ctx *gin.Context) {
 
 	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
 	contentType := helpers.GetContentType(ctx)
-
-	Products := []entity.Product{}
-	updatedProduct := entity.Product{}
+	adminID := uint(adminData["id"].(float64))
 	productUUID := ctx.Param("productUUID")
 
-	updatedProduct.AdminID = uint(adminData["id"].(float64))
-	updatedProduct.UUID = productUUID
-
+	Products := entity.Product{}
+	updatedProductReq := request.ProductRequest{}
 	if contentType == appJSON {
-		ctx.ShouldBindJSON(&updatedProduct)
+		ctx.ShouldBindJSON(&updatedProductReq)
 	} else {
-		ctx.ShouldBind(&updatedProduct)
+		ctx.ShouldBind(&updatedProductReq)
 	}
 
-	err := db.Debug().Where("uuid = ?", productUUID).First(&Products).Error
-	if err != nil {
+	updatedProductReq.AdminID = adminID
+
+	if helpers.IsValidImageSize(int(updatedProductReq.ImageURL.Size)) {
+		if helpers.IsValidImageExtension(updatedProductReq.ImageURL.Filename) {
+			fileName := helpers.RemoveExtension(updatedProductReq.ImageURL.Filename)
+			uploadResult, err := helpers.UploadFile(updatedProductReq.ImageURL, fileName)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+
+			updatedProduct := entity.Product{
+				UUID:     updatedProductReq.UUID,
+				Name:     updatedProductReq.Name,
+				ImageURL: uploadResult,
+				AdminID:  updatedProductReq.AdminID,
+			}
+
+			err = db.Debug().Model(&Products).Where("uuid = ?", productUUID).Updates(&updatedProduct).Error
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"error":   "Bad request",
+					"message": err.Error(),
+				})
+				return
+			}
+
+			ctx.JSON(http.StatusOK, gin.H{
+				"data": updatedProduct,
+			})
+		} else {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error":   "Bad request",
+				"message": "File extension should be in JPG, JPEG, PNG or SVG.",
+			})
+		}
+
+	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
-			"message": err.Error(),
-		})
-		return
-	}
-
-	err = db.Debug().Model(&Products).Where("uuid = ?", productUUID).Updates(&updatedProduct).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
+			"message": "File size should be less than 5MB.",
 		})
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": updatedProduct,
-	})
 }
 
 func DeleteProductbyUUID(ctx *gin.Context) {

@@ -38,3 +38,11 @@ func (p *Product) BeforeDelete(tx *gorm.DB) (err error) {
 	}
 	return nil
 }
+
+func (p *Product) BeforeUpdate(tx *gorm.DB) (err error) {
+	err = tx.Debug().Where("uuid = ?", p.UUID).First(&p).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
